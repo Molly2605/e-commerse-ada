@@ -10,27 +10,32 @@ export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
 
   const addToCart = async (product) => {
-    if (product.stock > 0) {
-      setCart((prevCart) => {
-        const productExists = prevCart.find((item) => item.id === product.id);
-        if (productExists) {
-          if (productExists.quantity < product.stock) {
-            return prevCart.map((item) =>
-              item.id === product.id
-                ? { ...item, quantity: item.quantity + 1 }
-                : item
-            );
+    try {
+      if (product.stock > 0) {
+        setCart((prevCart) => {
+          const productExists = prevCart.find((item) => item.id === product.id);
+          if (productExists) {
+            if (productExists.quantity < product.stock) {
+              return prevCart.map((item) =>
+                item.id === product.id
+                  ? { ...item, quantity: item.quantity + 1 }
+                  : item
+              );
+            } else {
+              alert("SIN STOCK!");
+            }
           } else {
-            alert("No puedes agregar más de este producto, el stock es limitado.");
+            return [...prevCart, { ...product, quantity: 1 }];
           }
-        } else {
-          return [...prevCart, { ...product, quantity: 1 }];
-        }
-      });
+        });
 
-      updateProductStock(product.id, product.stock - 1);
-    } else {
-      alert("Este producto está agotado.");
+        await updateProductStock(product.id, product.stock - 1);
+      } else {
+        alert("SIN STOCK!");
+      }
+    } catch (error) {
+      console.error("Error al agregar el producto al carrito:", error);
+      alert("Hubo un problema al agregar el producto al carrito.");
     }
   };
 
@@ -44,13 +49,19 @@ export const CartProvider = ({ children }) => {
   };
 
   const removeFromCart = (productId) => {
-    setCart(cart.filter((item) => item.id !== productId)); 
+    setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
   };
 
   const getTotalItems = () => cart.reduce((total, item) => total + item.quantity, 0);
 
+  const getTotalPrice = () => cart.reduce((total, item) => total + item.price * item.quantity, 0);
+
+  const clearCart = () => {
+    setCart([]);
+  };
+
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, getTotalItems }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, getTotalItems, getTotalPrice, clearCart }}>
       {children}
     </CartContext.Provider>
   );
