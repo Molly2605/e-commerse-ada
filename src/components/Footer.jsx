@@ -5,7 +5,7 @@ const Footer = () => {
   return (
     <Box bg="black" color="white" py={10}>
       <Container maxW="container.xl" textAlign="center">
-        <Text>&copy; 2025 Ecommerce para ADA IT Woman</Text>
+        <Text>2025 Ecommerce para ADA IT Woman</Text>
         <Text mt={2}>
           Hecho por Molly ❤️
           <Link href="https://github.com/Molly2605" color="white" fontWeight="bold" isExternal>

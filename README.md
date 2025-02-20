@@ -1,6 +1,6 @@
 # 🛒 E-commerce Básico
 
-Este es mi proyecto final, un **e-commerce básico** desarrollado con **React + Vite**, que incluye tanto una base de datos en el **back-end** como en el **front-end**.  
+Este es mi proyecto final para ADA IT WOMAN, un **e-commerce básico** desarrollado con **React + Vite**, que incluye tanto una base de datos en el **back-end** como en el **front-end**.  
 
 ## 🚀 Tecnologías utilizadas
 

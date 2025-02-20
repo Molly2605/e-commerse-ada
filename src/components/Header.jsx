@@ -37,12 +37,10 @@ const Header = () => {
     >
       <Flex justify="space-between" alignItems="center">
         
-        {/* Logo/Home */}
         <NavLink to="/" style={{ fontWeight: "bold", color: "black", fontSize: "18px" }}>
-          Home
+          HOME
         </NavLink>
 
-        {/* Icono de menú en móvil */}
         {isMobile ? (
           <Button variant="ghost" onClick={() => setIsMenuOpen(true)}>
             <Icon as={FaBars} boxSize={6} />
@@ -61,16 +59,14 @@ const Header = () => {
             ) : (
               <>
                 <NavLink to="/products" style={{ fontWeight: "bold", color: "black", fontSize: "18px" }}>
-                  Productos
+                  PRODUCTOS
                 </NavLink>
 
-                {/* Carrito */}
                 <Button variant="link" color="black" fontWeight="bold" fontSize="18px" onClick={() => setIsCartOpen(true)}>
                   <Icon as={FaShoppingCart} boxSize={6} mr={2} />
                   ({getTotalItems()})
                 </Button>
 
-                {/* Menú usuario */}
                 <Menu>
                   <MenuButton as={Button} variant="link" color="black" fontWeight="bold" fontSize="18px">
                     <Icon as={FaUser} boxSize={6} mr={2} />
@@ -89,7 +85,6 @@ const Header = () => {
           </Flex>
         )}
 
-        {/* Drawer (Menú lateral en móviles) */}
         <Drawer isOpen={isMenuOpen} placement="right" onClose={() => setIsMenuOpen(false)}>
           <DrawerOverlay />
           <DrawerContent>
@@ -115,7 +110,6 @@ const Header = () => {
           </DrawerContent>
         </Drawer>
 
-        {/* Drawer del carrito */}
         <Drawer isOpen={isCartOpen} placement="right" onClose={() => setIsCartOpen(false)}>
           <DrawerOverlay />
           <DrawerContent>

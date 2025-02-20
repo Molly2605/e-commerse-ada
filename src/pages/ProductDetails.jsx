@@ -37,27 +37,35 @@ const ProductDetails = () => {
   if (!product) return <Text>No se encontró el producto</Text>;
 
   return (
-    <Box padding={12}>
-      <Flex align="center" justify="center">
+    <Box padding={{ base: "6", md: "12" }}>
+      <Flex direction={{ base: "column", md: "row" }} align="center" justify="center">
         <Image
+          mt={20}
           src={product.img_url}
           alt={product.name}
-          boxSize="30%"
+          boxSize={{ base: "80%", md: "30%" }}
           objectFit="cover"
           fallbackSrc="https://via.placeholder.com/400"
         />
 
-        <Box p="4" ml="6" maxW="500px">
-          <Text fontWeight="bold" fontSize="3xl">
+        <Box p="4" ml={{ base: "0", md: "6" }} maxW="500px">
+          <Text fontWeight="bold" fontSize={{ base: "2xl", md: "3xl" }}>
             {product.name}
           </Text>
-          <Text fontSize="2xl" color="black">
+          <Text fontSize={{ base: "xl", md: "2xl" }} color="black">
             ${product.price}
           </Text>
-          <Text mt={4}>{product.description}</Text>
-          <Button color="white"
+          <Text mt={4} fontSize={{ base: "sm", md: "md" }}>
+            {product.description}
+          </Text>
+          <Button
+            color="white"
             backgroundColor="black"
-            _hover={{ backgroundColor: "#333" }} mt={4} onClick={() => addToCart(product)}>
+            _hover={{ backgroundColor: "#333" }}
+            mt={4}
+            width={{ base: "100%", md: "auto" }}
+            onClick={() => addToCart(product)}
+          >
             Agregar al Carrito
           </Button>
         </Box>
