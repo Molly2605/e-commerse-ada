@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../firebase/config";
 import { collection, getDocs } from "firebase/firestore";
-import { Box, Grid, Image, Text, Button, Icon } from "@chakra-ui/react";
+import { Box, Grid, Image, Text, Button, Icon, Flex } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { FaShoppingCart } from "react-icons/fa";
 import { useCart } from "../context/CartContext";
 
+const categories = ["TODOS", "BAÑO", "DECO", "COCINA", "AROMA"];
+
 const Products = () => {
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("TODOS");
   const [hoverImages, setHoverImages] = useState({});
   const { addToCart } = useCart();
 
@@ -19,10 +23,21 @@ const Products = () => {
         ...doc.data(),
       }));
       setProducts(productsList);
+      setFilteredProducts(productsList);
     };
 
     fetchProducts();
   }, []);
+
+  useEffect(() => {
+    if (selectedCategory === "TODOS") {
+      setFilteredProducts(products);
+    } else {
+      setFilteredProducts(
+        products.filter((product) => product.category.toLowerCase() === selectedCategory.toLowerCase())
+      );
+    }
+  }, [selectedCategory, products]);
 
   const handleMouseEnter = (id, hoverUrl) => {
     setHoverImages((prev) => ({ ...prev, [id]: hoverUrl }));
@@ -41,9 +56,22 @@ const Products = () => {
   };
 
   return (
-    <Box padding={14}>
-      <Grid templateColumns="repeat(4, 1fr)" gap={8} mt={14}>
-        {products.map((product) => (
+    <Box padding={24}>
+      <Flex justify="center" mb={10} gap={8}>
+        {categories.map((category) => (
+          <Button
+            color={selectedCategory === category ? "purple.500" : "black"}
+            variant="ghost"
+            _hover={{ color: "purple.400" }}
+            onClick={() => setSelectedCategory(category)}
+          >
+            {category}
+          </Button>
+        ))}
+      </Flex>
+
+      <Grid templateColumns="repeat(4, 1fr)" gap={8}>
+        {filteredProducts.map((product) => (
           <Box
             key={product.id}
             overflow="hidden"
@@ -71,20 +99,11 @@ const Products = () => {
               />
             </Box>
             <Box p="4" flex="1">
-              <Text fontSize="sm" mb={2}>
-                {product.name}
-              </Text>
-              <Text color="black" fontSize="lg" mb={4}>
-                ${product.price}
-              </Text>
+              <Text fontSize="sm" mb={2}>{product.name}</Text>
+              <Text color="black" fontSize="lg" mb={4}>${product.price}</Text>
               <Box display="flex" gap={3} alignItems="center">
                 <Link to={`/products/${product.id}`}>
-                  <Button
-                    color="grey"
-                    _hover={{ backgroundColor: "#333" }}
-                    width="120px"
-                    height="40px"
-                  >
+                  <Button color="grey" _hover={{ backgroundColor: "#333" }} width="120px" height="40px">
                     Ver Detalles
                   </Button>
                 </Link>
@@ -108,12 +127,6 @@ const Products = () => {
               <Text mt={2} color={product.stock > 0 ? "green.500" : "red.500"}>
                 {product.stock > 0 ? `Stock disponible: ${product.stock}` : "Sin stock"}
               </Text>
-              
-              {product.stock === 0 && (
-                <Text color="red.500" mt={2}>
-                  No hay stock disponible
-                </Text>
-              )}
             </Box>
           </Box>
         ))}
