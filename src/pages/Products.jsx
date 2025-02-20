@@ -41,8 +41,8 @@ const Products = () => {
   };
 
   return (
-    <Box padding={12}>
-      <Grid templateColumns="repeat(4, 1fr)" gap={8}>
+    <Box padding={14}>
+      <Grid templateColumns="repeat(4, 1fr)" gap={8} mt={14}>
         {products.map((product) => (
           <Box
             key={product.id}

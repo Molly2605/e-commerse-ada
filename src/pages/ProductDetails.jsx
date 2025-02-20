@@ -39,16 +39,14 @@ const ProductDetails = () => {
   return (
     <Box padding={12}>
       <Flex align="center" justify="center">
-        {/* Imagen a la izquierda */}
         <Image
-          src={product.img_url} // Asegúrate de que el campo sea correcto
+          src={product.img_url}
           alt={product.name}
           boxSize="30%"
           objectFit="cover"
-          fallbackSrc="https://via.placeholder.com/400" // Imagen de respaldo si no hay URL
+          fallbackSrc="https://via.placeholder.com/400"
         />
 
-        {/* Texto a la derecha */}
         <Box p="4" ml="6" maxW="500px">
           <Text fontWeight="bold" fontSize="3xl">
             {product.name}

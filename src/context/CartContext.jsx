@@ -1,6 +1,7 @@
 import { createContext, useContext, useState } from "react";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, collection, addDoc } from "firebase/firestore";
 import { db } from "../firebase/config";
+import { useAuth } from "../context/AuthContext";
 
 const CartContext = createContext();
 
@@ -8,6 +9,7 @@ export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
+  const { currentUser } = useAuth();
 
   const addToCart = async (product) => {
     try {
@@ -23,6 +25,7 @@ export const CartProvider = ({ children }) => {
               );
             } else {
               alert("SIN STOCK!");
+              return prevCart;
             }
           } else {
             return [...prevCart, { ...product, quantity: 1 }];
@@ -35,7 +38,6 @@ export const CartProvider = ({ children }) => {
       }
     } catch (error) {
       console.error("Error al agregar el producto al carrito:", error);
-      alert("Hubo un problema al agregar el producto al carrito.");
     }
   };
 
@@ -60,8 +62,32 @@ export const CartProvider = ({ children }) => {
     setCart([]);
   };
 
+  const checkout = async () => {
+    if (!currentUser) {
+      alert("Debes estar logueado para finalizar la compra.");
+      return;
+    }
+
+    try {
+      const order = {
+        userEmail: currentUser.email,
+        items: cart,
+        total: getTotalPrice(),
+        date: new Date().toISOString(),
+      };
+
+      await addDoc(collection(db, "orders"), order);
+
+      clearCart();
+      alert("Compra realizada con éxito.");
+    } catch (error) {
+      console.error("Error al procesar la compra:", error);
+      alert("Hubo un error al procesar la compra.");
+    }
+  };
+
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, getTotalItems, getTotalPrice, clearCart }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, getTotalItems, getTotalPrice, clearCart, checkout }}>
       {children}
     </CartContext.Provider>
   );

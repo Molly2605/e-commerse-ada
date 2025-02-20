@@ -1,5 +1,5 @@
 import React from "react";
-import {Route, Routes as RoutesReact } from "react-router-dom";
+import { Route, Routes as RoutesReact } from "react-router-dom";
 import Home from "../pages/Home";
 import Products from "../pages/Products";
 import NotFound from "../pages/NotFound";
@@ -10,6 +10,8 @@ import ProtectedRoute from "../routes/ProtectedRoute";
 import { useAuth } from "../context/AuthContext";
 import ProductDetails from "../pages/ProductDetails";
 import Cart from "../pages/Cart";
+import UserProfile from "../pages/UserProfile";
+import OrderHistory from "../pages/ProfilePage";
 
 const Routes = () => {
   const { user } = useAuth();
@@ -25,6 +27,8 @@ const Routes = () => {
           <Route path="/products" element={<Products />} />
           <Route path="/products/:id" element={<ProductDetails />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/order-history" element={<OrderHistory />} />
+          <Route path="/perfil" element={<UserProfile />} />
         </>
       ) : (
         <>
@@ -49,6 +53,14 @@ const Routes = () => {
             element={
               <ProtectedRoute>
                 <Cart />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/order-history"
+            element={
+              <ProtectedRoute>
+                <OrderHistory />
               </ProtectedRoute>
             }
           />

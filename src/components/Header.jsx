@@ -1,4 +1,4 @@
-import { Box, Flex, Button, Icon, Drawer, DrawerOverlay, DrawerContent, DrawerHeader, DrawerBody, DrawerCloseButton, Text, Image, VStack, HStack, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
+import { Box, Flex, Button, Icon, Drawer, DrawerOverlay, DrawerContent, DrawerBody, DrawerCloseButton, Text, Image, VStack, HStack, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { FaUser, FaShoppingCart } from "react-icons/fa";
@@ -8,17 +8,27 @@ import { DeleteIcon } from "@chakra-ui/icons";
 
 const Header = () => {
   const { user, logout } = useAuth();
-  const { cart, removeFromCart, getTotalItems, getTotalPrice, clearCart } = useCart(); // Asegúrate de tener la función `clearCart` en tu CartContext
+  const { cart, removeFromCart, getTotalItems, getTotalPrice, clearCart } = useCart();
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   const handlePayment = () => {
-    // Acción cuando se realiza el pago
     alert('GRACIAS POR TU COMPRA!✨✨✨');
-    clearCart(); // Vaciar el carrito
+    clearCart();
   };
 
   return (
-    <Box as="header" color="white" mt={16}>
+    <Box
+      as="header"
+      mt={0}
+      position="fixed"
+      left={20}
+      right={20}
+      zIndex={10}
+      bgGradient="linear(to-r, #e7e4d2, #dfd1f0, #d5ebf0)"
+      height="40px"
+      py={12}
+      borderBottom="2px solid rgba(53, 36, 61, 0.12)"
+    >
       <Flex justify="space-between" alignItems="center">
         <NavLink to="/" style={{ fontWeight: "bold", color: "black", fontSize: "18px" }}>
           Home
@@ -95,7 +105,13 @@ const Header = () => {
                   <Icon as={FaUser} boxSize={6} mr={2} />
                 </MenuButton>
                 <MenuList>
-                  <MenuItem onClick={logout}>Cerrar Sesión</MenuItem>
+                  <MenuItem as={NavLink} to="/order-history" color="black">
+                    Historial de Pedidos
+                  </MenuItem>
+
+                  <MenuItem onClick={logout} color="black">
+                    Cerrar Sesión
+                  </MenuItem>
                 </MenuList>
               </Menu>
             </>
