@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../firebase/config";
 import { collection, getDocs } from "firebase/firestore";
-import { Box, Grid, Image, Text, Button, Icon, Flex } from "@chakra-ui/react";
+import { Box, Grid, Image, Text, Button, Icon, Flex, Spinner, Center } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { FaShoppingCart } from "react-icons/fa";
 import { useCart } from "../context/CartContext";
@@ -13,17 +13,25 @@ const Products = () => {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("TODOS");
   const [hoverImages, setHoverImages] = useState({});
+  const [loading, setLoading] = useState(true);
   const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const querySnapshot = await getDocs(collection(db, "productos"));
-      const productsList = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setProducts(productsList);
-      setFilteredProducts(productsList);
+      try {
+        setLoading(true);
+        const querySnapshot = await getDocs(collection(db, "productos"));
+        const productsList = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setProducts(productsList);
+        setFilteredProducts(productsList);
+      } catch (error) {
+        console.error("Error al cargar productos:", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchProducts();
@@ -90,77 +98,81 @@ const Products = () => {
         ))}
       </Flex>
 
-
-      <Grid
-        templateColumns={{ base: "repeat(2, 1fr)", md: "repeat(3, 1fr)", lg: "repeat(4, 1fr)" }}
-        gap={8}
-        rowGap={20}
-      >
-        {filteredProducts.map((product) => (
-          <Box
-            key={product.id}
-            overflow="hidden"
-            display="flex"
-            flexDirection="column"
-            position="relative"
-            opacity={product.stock === 0 ? 0.5 : 1}
-          >
+      {loading ? (
+        <Center height="50vh">
+          <Spinner size="xl" color="purple.500" thickness="4px" />
+        </Center>
+      ) : (
+        <Grid
+          templateColumns={{ base: "repeat(2, 1fr)", md: "repeat(3, 1fr)", lg: "repeat(4, 1fr)" }}
+          gap={8}
+          rowGap={20}
+        >
+          {filteredProducts.map((product) => (
             <Box
-              height={{ base: "200px", sm: "180px", md: "400px" }}
-              width="100%"
-              onMouseEnter={() => handleMouseEnter(product.id, product.img_hover_url)}
-              onMouseLeave={() => handleMouseLeave(product.id)}
+              key={product.id}
+              overflow="hidden"
+              display="flex"
+              flexDirection="column"
+              position="relative"
+              opacity={product.stock === 0 ? 0.5 : 1}
             >
-              <Image
-                src={hoverImages[product.id]}
-                alt={product.name}
-                objectFit="cover"
-                height="100%"
+              <Box
+                height={{ base: "200px", sm: "180px", md: "400px" }}
                 width="100%"
-                transition="transform 0.2s ease-in-out"
-                _hover={{ boxShadow: "xl", transform: "scale(1.05)" }}
-                filter={product.stock === 0 ? "grayscale(100%)" : "none"}
-              />
-            </Box>
+                onMouseEnter={() => handleMouseEnter(product.id, product.img_hover_url)}
+                onMouseLeave={() => handleMouseLeave(product.id)}
+              >
+                <Image
+                  src={hoverImages[product.id]}
+                  alt={product.name}
+                  objectFit="cover"
+                  height="100%"
+                  width="100%"
+                  transition="transform 0.2s ease-in-out"
+                  _hover={{ boxShadow: "xl", transform: "scale(1.05)" }}
+                  filter={product.stock === 0 ? "grayscale(100%)" : "none"}
+                />
+              </Box>
 
-            <Box p={2} flex="1">
-              <Text fontSize={{ base: "sm", md: "md" }} mb={1}>{product.name}</Text>
-              <Text color="black" fontSize={{ base: "md", md: "lg" }} fontWeight="bold" mb={4}>
-                ${product.price}
-              </Text>
+              <Box p={2} flex="1">
+                <Text fontSize={{ base: "sm", md: "md" }} mb={1}>{product.name}</Text>
+                <Text color="black" fontSize={{ base: "md", md: "lg" }} fontWeight="bold" mb={4}>
+                  ${product.price}
+                </Text>
 
-              <Flex justify="space-between" align="center">
-                <Link to={`/products/${product.id}`}>
+                <Flex justify="space-between" align="center">
+                  <Link to={`/products/${product.id}`}>
+                    <Button
+                      color="grey"
+                      _hover={{ backgroundColor: "#333" }}
+                      size={{ base: "xs", md: "sm" }}
+                    >
+                      Ver Detalles
+                    </Button>
+                  </Link>
+
                   <Button
-                    color="grey"
+                    color="white"
+                    backgroundColor="black"
                     _hover={{ backgroundColor: "#333" }}
                     size={{ base: "xs", md: "sm" }}
+                    borderRadius="50%"
+                    onClick={() => handleAddToCart(product)}
+                    disabled={product.stock === 0}
                   >
-                    Ver Detalles
+                    <Icon as={FaShoppingCart} boxSize={4} />
                   </Button>
-                </Link>
+                </Flex>
 
-                <Button
-                  color="white"
-                  backgroundColor="black"
-                  _hover={{ backgroundColor: "#333" }}
-                  size={{ base: "xs", md: "sm" }}
-                  borderRadius="50%"
-                  onClick={() => handleAddToCart(product)}
-                  disabled={product.stock === 0}
-                >
-                  <Icon as={FaShoppingCart} boxSize={4} />
-                </Button>
-              </Flex>
-
-              <Text mt={2} fontSize={{ base: "xs", md: "sm" }} color={product.stock > 0 ? "green.500" : "red.500"}>
-                {product.stock > 0 ? `Stock disponible: ${product.stock}` : "Sin stock"}
-              </Text>
+                <Text mt={2} fontSize={{ base: "xs", md: "sm" }} color={product.stock > 0 ? "green.500" : "red.500"}>
+                  {product.stock > 0 ? `Stock disponible: ${product.stock}` : "Sin stock"}
+                </Text>
+              </Box>
             </Box>
-          </Box>
-        ))}
-      </Grid>
-
+          ))}
+        </Grid>
+      )}
     </Box>
   );
 };
