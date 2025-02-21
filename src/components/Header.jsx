@@ -1,6 +1,6 @@
-import { 
-  Box, Flex, Button, Icon, Drawer, DrawerOverlay, DrawerContent, DrawerBody, DrawerCloseButton, 
-  Text, Image, VStack, HStack, Menu, MenuButton, MenuList, MenuItem, useBreakpointValue 
+import {
+  Box, Flex, Button, Icon, Drawer, DrawerOverlay, DrawerContent, DrawerBody, DrawerCloseButton,
+  Text, Image, VStack, HStack, Menu, MenuButton, MenuList, MenuItem, useBreakpointValue
 } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -36,54 +36,44 @@ const Header = () => {
       borderBottom="2px solid rgba(53, 36, 61, 0.12)"
     >
       <Flex justify="space-between" alignItems="center">
-        
-        <NavLink to="/" style={{ fontWeight: "bold", color: "black", fontSize: "18px" }}>
-          HOME
-        </NavLink>
-
         {isMobile ? (
           <Button variant="ghost" onClick={() => setIsMenuOpen(true)}>
             <Icon as={FaBars} boxSize={6} />
           </Button>
         ) : (
-          <Flex gap={4} alignItems="center">
-            {!user ? (
-              <>
-                <NavLink to="/register" style={{ fontWeight: "bold", color: "black", fontSize: "18px" }}>
-                  Registrarse
-                </NavLink>
-                <NavLink to="/login" style={{ fontWeight: "bold", color: "black", fontSize: "18px" }}>
-                  Iniciar Sesión
-                </NavLink>
-              </>
-            ) : (
-              <>
-                <NavLink to="/products" style={{ fontWeight: "bold", color: "black", fontSize: "18px" }}>
-                  PRODUCTOS
-                </NavLink>
-
-                <Button variant="link" color="black" fontWeight="bold" fontSize="18px" onClick={() => setIsCartOpen(true)}>
-                  <Icon as={FaShoppingCart} boxSize={6} mr={2} />
-                  ({getTotalItems()})
-                </Button>
-
-                <Menu>
-                  <MenuButton as={Button} variant="link" color="black" fontWeight="bold" fontSize="18px">
-                    <Icon as={FaUser} boxSize={6} mr={2} />
-                  </MenuButton>
-                  <MenuList>
-                    <MenuItem as={NavLink} to="/order-history" color="black">
-                      Historial de Pedidos
-                    </MenuItem>
-                    <MenuItem onClick={logout} color="black">
-                      Cerrar Sesión
-                    </MenuItem>
-                  </MenuList>
-                </Menu>
-              </>
-            )}
-          </Flex>
+          <NavLink to="/" style={{ fontWeight: "bold", color: "black", fontSize: "18px" }}>
+            HOME
+          </NavLink>
         )}
+
+        <Flex alignItems="center" gap={4}>
+          <Button
+            variant="link"
+            color="black"
+            fontWeight="bold"
+            fontSize="18px"
+            onClick={() => setIsCartOpen(true)}
+            display="flex"
+            alignItems="center"
+          >
+            <Icon as={FaShoppingCart} boxSize={6} mr={2} />
+            <Text display="inline">({getTotalItems()})</Text>
+          </Button>
+
+          <Menu>
+            <MenuButton as={Button} variant="link" color="black" fontWeight="bold" fontSize="18px">
+              <Icon as={FaUser} boxSize={6} mr={2} />
+            </MenuButton>
+            <MenuList>
+              <MenuItem as={NavLink} to="/order-history" color="black">
+                Historial de Pedidos
+              </MenuItem>
+              <MenuItem onClick={logout} color="black">
+                Cerrar Sesión
+              </MenuItem>
+            </MenuList>
+          </Menu>
+        </Flex>
 
         <Drawer isOpen={isMenuOpen} placement="right" onClose={() => setIsMenuOpen(false)}>
           <DrawerOverlay />
@@ -143,7 +133,8 @@ const Header = () => {
                       <Text fontSize="xl" fontWeight="bold">Total:</Text>
                       <Text fontSize="xl" fontWeight="bold">${getTotalPrice()}</Text>
                     </Flex>
-                    <Button colorScheme="teal" w="full" mt={4} onClick={handlePayment} isDisabled={cart.length === 0}>
+                    <Button bg="black"
+                      color="white" w="full" mt={4} onClick={handlePayment} isDisabled={cart.length === 0}>
                       Pagar
                     </Button>
                   </VStack>
