@@ -2,7 +2,7 @@ import {
   Box, Flex, Button, Icon, Drawer, DrawerOverlay, DrawerContent, DrawerBody, DrawerCloseButton,
   Text, Image, VStack, HStack, Menu, MenuButton, MenuList, MenuItem, useBreakpointValue
 } from "@chakra-ui/react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { FaUser, FaShoppingCart, FaBars } from "react-icons/fa";
 import { useCart } from "../context/CartContext";
@@ -14,12 +14,18 @@ const Header = () => {
   const { cart, removeFromCart, getTotalItems, getTotalPrice, clearCart } = useCart();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   const isMobile = useBreakpointValue({ base: true, md: false });
 
   const handlePayment = () => {
     alert('GRACIAS POR TU COMPRA!✨✨✨');
     clearCart();
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
   };
 
   return (
@@ -46,59 +52,79 @@ const Header = () => {
           </NavLink>
         )}
 
-        <Flex alignItems="center" gap={4}>
-          <Button
-            variant="link"
-            color="black"
-            fontWeight="bold"
-            fontSize="18px"
-            onClick={() => setIsCartOpen(true)}
-            display="flex"
-            alignItems="center"
-          >
-            <Icon as={FaShoppingCart} boxSize={6} mr={2} />
-            <Text display="inline">({getTotalItems()})</Text>
-          </Button>
+<Flex alignItems="center" gap={4}>
+  {user && !isMobile && (
+    <NavLink to="/products" style={{ fontWeight: "bold", color: "black", fontSize: "18px" }}>
+      Productos
+    </NavLink>
+  )}
 
-          <Menu>
-            <MenuButton as={Button} variant="link" color="black" fontWeight="bold" fontSize="18px">
-              <Icon as={FaUser} boxSize={6} mr={2} />
-            </MenuButton>
-            <MenuList>
-              <MenuItem as={NavLink} to="/order-history" color="black">
-                Historial de Pedidos
-              </MenuItem>
-              <MenuItem onClick={logout} color="black">
-                Cerrar Sesión
-              </MenuItem>
-            </MenuList>
-          </Menu>
-        </Flex>
+  <Button
+    variant="link"
+    color="black"
+    fontWeight="bold"
+    fontSize="18px"
+    onClick={() => setIsCartOpen(true)}
+    display="flex"
+    alignItems="center"
+  >
+    <Icon as={FaShoppingCart} boxSize={6} mr={2} />
+    <Text display="inline">({getTotalItems()})</Text>
+  </Button>
 
-        <Drawer isOpen={isMenuOpen} placement="right" onClose={() => setIsMenuOpen(false)}>
-          <DrawerOverlay />
-          <DrawerContent>
-            <DrawerCloseButton />
-            <DrawerBody mt={12}>
-              <VStack align="center" spacing={6}>
-                {!user ? (
-                  <>
-                    <NavLink to="/register" onClick={() => setIsMenuOpen(false)}>Registrarse</NavLink>
-                    <NavLink to="/login" onClick={() => setIsMenuOpen(false)}>Iniciar Sesión</NavLink>
-                  </>
-                ) : (
-                  <>
-                    <NavLink to="/products" onClick={() => setIsMenuOpen(false)}>Productos</NavLink>
-                    <NavLink to="/order-history" onClick={() => setIsMenuOpen(false)}>Historial de Pedidos</NavLink>
-                    <Button onClick={logout} colorScheme="red" variant="ghost">
-                      Cerrar Sesión
-                    </Button>
-                  </>
-                )}
-              </VStack>
-            </DrawerBody>
-          </DrawerContent>
-        </Drawer>
+  <Menu>
+    <MenuButton as={Button} variant="link" color="black" fontWeight="bold" fontSize="18px">
+      <Icon as={FaUser} boxSize={6} mr={2} />
+    </MenuButton>
+    <MenuList>
+      {user ? (
+        <>
+          <MenuItem as={NavLink} to="/order-history" color="black">
+            Historial de Pedidos
+          </MenuItem>
+          <MenuItem onClick={handleLogout} color="black">
+            Cerrar Sesión
+          </MenuItem>
+        </>
+      ) : (
+        <>
+          <MenuItem as={NavLink} to="/login" color="black">
+            Iniciar Sesión
+          </MenuItem>
+          <MenuItem as={NavLink} to="/register" color="black">
+            Registrarse
+          </MenuItem>
+        </>
+      )}
+    </MenuList>
+  </Menu>
+</Flex>
+
+<Drawer isOpen={isMenuOpen} placement="right" onClose={() => setIsMenuOpen(false)}>
+  <DrawerOverlay />
+  <DrawerContent>
+    <DrawerCloseButton />
+    <DrawerBody mt={12}>
+      <VStack align="center" spacing={6}>
+        {!user ? (
+          <>
+            <NavLink to="/register" onClick={() => setIsMenuOpen(false)}>Registrarse</NavLink>
+            <NavLink to="/login" onClick={() => setIsMenuOpen(false)}>Iniciar Sesión</NavLink>
+          </>
+        ) : (
+          <>
+            <NavLink to="/products" onClick={() => setIsMenuOpen(false)}>Productos</NavLink>
+            <NavLink to="/order-history" onClick={() => setIsMenuOpen(false)}>Historial de Pedidos</NavLink>
+            <Button onClick={handleLogout} colorScheme="red" variant="ghost">
+              Cerrar Sesión
+            </Button>
+          </>
+        )}
+      </VStack>
+    </DrawerBody>
+  </DrawerContent>
+</Drawer>
+
 
         <Drawer isOpen={isCartOpen} placement="right" onClose={() => setIsCartOpen(false)}>
           <DrawerOverlay />
